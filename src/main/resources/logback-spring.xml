@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <property resource="application.properties"/>
+    <contextName>${spring.application.name}</contextName>
+
+    <!-- All below config is for qa1 & prod only -->
+
+    <appender name="defaultAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <shortenedLoggerNameLength>20</shortenedLoggerNameLength>
+            <timeZone>UTC</timeZone>
+            <timestampPattern>yyyy-MM-dd'T'HH:mm:ss.SSS</timestampPattern>
+
+            <customFields>
+                {"service.id": "example-api" }
+            </customFields>
+
+            <includeMdcKeyName>x-http-request-id</includeMdcKeyName>
+            <includeMdcKeyName>x-http-caller-id</includeMdcKeyName>
+            <includeMdcKeyName>event.type</includeMdcKeyName>
+            <includeMdcKeyName>event.source</includeMdcKeyName>
+            <includeMdcKeyName>request.framework.version</includeMdcKeyName>
+            <includeMdcKeyName>event.time</includeMdcKeyName>
+            <includeMdcKeyName>request.method</includeMdcKeyName>
+            <includeMdcKeyName>request.referer</includeMdcKeyName>
+            <includeMdcKeyName>request.type</includeMdcKeyName>
+            <includeMdcKeyName>request.uri</includeMdcKeyName>
+            <includeMdcKeyName>request.user-agent</includeMdcKeyName>
+            <includeMdcKeyName>response.statuscode</includeMdcKeyName>
+            <includeMdcKeyName>session.id</includeMdcKeyName>
+            <includeMdcKeyName>X-Forwarded-For</includeMdcKeyName>
+
+            <fieldNames>
+                <timestamp>log.time</timestamp>
+                <level>event.category</level>
+                <logger>c</logger>
+                <thread>t</thread>
+                <message>m</message>
+                <version>[ignore]</version>
+                <levelValue>[ignore]</levelValue>
+                <stackTrace>exception</stackTrace>
+            </fieldNames>
+        </encoder>
+    </appender>
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>${HOME}/${spring.application.name}.log</file>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
+    </appender>
+    <!-- appender name="JSON_TCP" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>${DD_LOG_SITE}:${DD_LOG_SITE_PORT}</destination>
+        <keepAliveDuration>20 seconds</keepAliveDuration>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <prefix class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+                <layout class="ch.qos.logback.classic.PatternLayout">
+                    <pattern>${DD_API_KEY} %mdc{keyThatDoesNotExist}</pattern>
+                </layout>
+            </prefix>
+        </encoder>
+        <ssl />
+    </appender -->
+    <root level="INFO">
+        <appender-ref ref="defaultAppender"/>
+        <!--appender-ref ref="JSON_TCP"/ -->
+    </root>
+    <logger name="com.example.apiexample" additivity="false" level="INFO">
+        <appender-ref ref="defaultAppender"/>
+    </logger>
+    <logger name="org.springframework.cache" additivity="false" level="TRACE">
+        <appender-ref ref="FILE" />
+    </logger>
+    <logger name="org.springframework.data.redis" additivity="false" level="TRACE">
+        <appender-ref ref="FILE" />
+    </logger>
+    <logger name="org.springframework.data.redis.cache" additivity="false" level="TRACE">
+        <appender-ref ref="FILE" />
+    </logger>
+</configuration>

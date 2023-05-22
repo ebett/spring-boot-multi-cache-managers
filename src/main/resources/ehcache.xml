@@ -1,0 +1,29 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.ehcache.org/v3"
+  xmlns:jsr107="http://www.ehcache.org/v3/jsr107"
+  xmlns:mnm="http://www.ehcache.org/v3/management"
+  xmlns:tc="http://www.ehcache.org/v3/clustered"
+  xsi:schemaLocation="
+            http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core-3.0.xsd
+            http://www.ehcache.org/v3/jsr107 http://www.ehcache.org/schema/ehcache-107-ext-3.0.xsd">
+
+  <cache alias="mathCache">
+    <key-type>org.springframework.cache.interceptor.SimpleKey</key-type>
+    <value-type>java.lang.Integer</value-type>
+    <expiry>
+      <ttl unit="minutes">5</ttl>
+    </expiry>
+    <listeners>
+      <listener>
+        <class>com.example.apiexample.cache.CustomCacheEventLogger</class>
+        <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
+        <event-ordering-mode>UNORDERED</event-ordering-mode>
+        <events-to-fire-on>CREATED</events-to-fire-on>
+        <events-to-fire-on>EXPIRED</events-to-fire-on>
+      </listener>
+    </listeners>
+    <resources>
+      <heap unit="entries">10000</heap>
+    </resources>
+  </cache>
+</config>
